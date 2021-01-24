@@ -7,7 +7,7 @@ import lombok.Data;
 public class FileTypeCreateRequest {
 
     private String fileType;
-    private FileTypeType type;
+    private FileTypeType type = FileTypeType.CUSTOM;
     private boolean isDeleted;
 
 }

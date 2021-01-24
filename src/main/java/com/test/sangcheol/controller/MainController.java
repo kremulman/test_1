@@ -1,17 +1,15 @@
 package com.test.sangcheol.controller;
 
+import com.google.common.collect.Lists;
 import com.test.sangcheol.controller.request.FileTypeCreateRequest;
 import com.test.sangcheol.domain.FileType;
+import com.test.sangcheol.domain.FileTypeType;
 import com.test.sangcheol.service.MainService;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,24 +36,40 @@ public class MainController {
 
     @GetMapping("/gettype")
     public List<FileType> getAllAllowedType() {
-        List<FileType> fileTypeList = mainService.read();
+        List<FileType> fileTypeList = mainService.getAllCustomTypeList();
         return fileTypeList;
     }
 
     // 저장 및 업데이트는 1개 요소씩
     @PostMapping("/createtype")
-    public FileType createAllowedType(FileTypeCreateRequest type) {
+    public FileType createAllowedType(@RequestBody FileTypeCreateRequest type) {
         validateType(type); // 입력값 검증
-        validateCount(type); // 갯수 검증
-        FileType fileType = mainService.create(FileType.builder().fileType("asdf").build()); // 저장
+        if(type.getType().equals(FileTypeType.CUSTOM)) {
+            validateCount(type); // 갯수 검증
+        }
+        FileType fileType = mainService.findFileType(type.getType(), type.getFileType());
+        if (Objects.isNull(fileType)) { // 없으면 신규생성
+            fileType = mainService.create(FileType.builder().fileType(type.getFileType()).type(type.getType()).build()); // 저장
+        } else if(fileType.getExpiredAt() == null) { // 중복입력
+            throw new RuntimeException("이미 입력된 확장자 입니다.");
+        } else if(fileType.getExpiredAt() != null) { // 기존에 입력된 데이터이나 삭제 됐을 경우
+            mainService.reviveFileType(fileType);
+        }
+        return fileType; // 결과 리턴
+    }
+
+    // 저장 및 업데이트는 1개 요소씩, 삭제의 경우는 조회 후 소프트딜리트로 처리
+    @DeleteMapping("/deletetype")
+    public FileType deleteAllowedType(@RequestBody FileTypeCreateRequest type) {
+        validateType(type); // 입력값 검증
+        FileType fileType = mainService.deleteType(type.getType(), type.getFileType()); // 저장
         return fileType; // 결과 리턴
     }
 
     private void validateCount(FileTypeCreateRequest type) {
-        List<FileType> fileTypeList = mainService.read();
-        Map<String, FileType> strMap = fileTypeList.stream().collect(Collectors.toMap(e -> e.getFileType(), Function.identity()));
-        strMap.put(type.getFileType(), new FileType());
-        if(strMap.keySet().size() > 200) {
+        List<FileType> fileTypeList = mainService.getAllCustomTypeList();
+        List<String> strList = fileTypeList.stream().map(e -> e.getFileType().trim()).distinct().collect(Collectors.toList());
+        if (!strList.contains(type.getFileType()) && strList.size() >= 200) {
             throw new RuntimeException("커스텀 확장자는 200개 이하여야 합니다");
         }
     }
@@ -65,7 +79,12 @@ public class MainController {
         if(StringUtils.isEmpty(type.getFileType()) || type.getFileType().trim().length() > 20) {
             throw new RuntimeException("확장자는 20자 이하여야 합니다");
         }
-    }
 
+        // 자주쓰는 확장자의 경우는 FIXED 타입을 설정
+        List<String> fixedList = Lists.newArrayList("bat","cmd","com","cpl","exe","scr","js");
+        if(fixedList.contains(type.getFileType().trim())) {
+            type.setType(FileTypeType.FIXED);
+        }
+    }
 
 }
