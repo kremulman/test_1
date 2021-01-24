@@ -3,11 +3,11 @@ package com.test.sangcheol.controller;
 import com.test.sangcheol.controller.request.FileTypeCreateRequest;
 import com.test.sangcheol.domain.FileType;
 import com.test.sangcheol.service.MainService;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
