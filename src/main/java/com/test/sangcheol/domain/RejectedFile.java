@@ -16,12 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class FileType {
+public class RejectedFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String fileType;
-    private FileTypeType type;
+    private String fileTypeString;
+    private RejectedFileType fileType;
     private LocalDateTime expiredAt;
 
 }

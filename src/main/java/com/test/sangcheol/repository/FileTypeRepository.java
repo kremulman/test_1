@@ -1,15 +1,15 @@
 package com.test.sangcheol.repository;
 
-import com.test.sangcheol.domain.FileType;
-import com.test.sangcheol.domain.FileTypeType;
+import com.test.sangcheol.domain.RejectedFile;
+import com.test.sangcheol.domain.RejectedFileType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface FileTypeRepository extends JpaRepository<FileType, Long> {
-    List<FileType> findAllByTypeIsAndExpiredAtIsNull(FileTypeType type);
+public interface FileTypeRepository extends JpaRepository<RejectedFile, Long> {
+    List<RejectedFile> findAllByFileTypeIsAndExpiredAtIsNull(RejectedFileType type);
 
-    FileType findByTypeAndFileTypeAndExpiredAtIsNull(FileTypeType fixed, String fileType);
+    RejectedFile findByFileTypeAndFileTypeStringAndExpiredAtIsNull(RejectedFileType fixed, String fileType);
 
-    FileType findByTypeAndFileType(FileTypeType type, String fileType);
+    RejectedFile findByFileTypeAndFileTypeString(RejectedFileType type, String fileType);
 }

@@ -13,7 +13,7 @@
 <body>
 <div id="type-container">
     <c:forEach items="${typeList}" var="list" varStatus="status">
-        <p>${list.fileType}a</p>
+        <p>${list.rejectedFile}a</p>
     </c:forEach>
 </div>
 </body>

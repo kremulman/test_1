@@ -13,7 +13,6 @@ $(document).ready(function () {
     $("#submit-add").click(function (event) {
         event.preventDefault();
         console.log($("#type-string").val());
-        // addType($("#type-string").val());
         add_custom_type($("#type-string").val(), event);
     });
 
@@ -39,8 +38,7 @@ function initCheckbox() {
 function add_custom_type(fileType, event) {
     var eventTarget = $(event.target);
     var addRequest = {}
-    addRequest["fileType"] = fileType;
-    // $("#submit-add").prop("disabled", true);
+    addRequest["fileTypeString"] = fileType;
     eventTarget.prop("disabled", true);
     $.ajax({
         type: "POST",
@@ -53,8 +51,8 @@ function add_custom_type(fileType, event) {
         success: function (data) {
             console.log("SUCCESS : ", data);
             var originHtml = $('#type-container').html();
-            originHtml = originHtml + "<div id='custom-type-" + data.id + "' style='display: inline-block'>" + data.fileType + "<button onclick='delete_custom_type(" + data.fileType + ")'>X</button></div>";
-            var originHtml = $('#type-container').html(originHtml);
+            originHtml = originHtml + "<div id='custom-type-" + data.id + "' style='display: inline-block'>" + data.fileTypeString + "<button onclick='delete_custom_type(" + data.fileTypeString + ")'>X</button></div>";
+            $('#type-container').html(originHtml);
             eventTarget.prop("disabled", false);
             $("#type-string").val("");
         },
@@ -69,7 +67,7 @@ function add_custom_type(fileType, event) {
 function add_fixed_type(fileType, event) {
     var eventTarget = $(event.target);
     var addRequest = {}
-    addRequest["fileType"] = fileType;
+    addRequest["fileTypeString"] = fileType;
     eventTarget.prop("disabled", true);
     $.ajax({
         type: "POST",
@@ -96,7 +94,7 @@ function add_fixed_type(fileType, event) {
 function delete_fixed_type(fileType, event) {
     var eventTarget = $(event.target);
     var addRequest = {}
-    addRequest["fileType"] = fileType;
+    addRequest["fileTypeString"] = fileType;
     addRequest["isDeleted"] = true;
     eventTarget.prop("disabled", true);
     $.ajax({
@@ -123,7 +121,7 @@ function delete_fixed_type(fileType, event) {
 
 function delete_custom_type(fileType) {
     var addRequest = {}
-    addRequest["fileType"] = fileType;
+    addRequest["fileTypeString"] = fileType;
     $.ajax({
         type: "DELETE",
         contentType: "application/json",

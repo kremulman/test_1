@@ -2,8 +2,8 @@ package com.test.sangcheol.controller;
 
 import com.google.common.collect.Lists;
 import com.test.sangcheol.controller.request.FileTypeCreateRequest;
-import com.test.sangcheol.domain.FileType;
-import com.test.sangcheol.domain.FileTypeType;
+import com.test.sangcheol.domain.RejectedFile;
+import com.test.sangcheol.domain.RejectedFileType;
 import com.test.sangcheol.service.MainService;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,55 +35,55 @@ public class MainController {
     }
 
     @GetMapping("/gettype")
-    public List<FileType> getAllAllowedType() {
-        List<FileType> fileTypeList = mainService.getAllCustomTypeList();
-        return fileTypeList;
+    public List<RejectedFile> getAllAllowedType() {
+        List<RejectedFile> rejectedFileList = mainService.getAllCustomTypeList();
+        return rejectedFileList;
     }
 
     // 저장 및 업데이트는 1개 요소씩
     @PostMapping("/createtype")
-    public FileType createAllowedType(@RequestBody FileTypeCreateRequest type) {
+    public RejectedFile createAllowedType(@RequestBody FileTypeCreateRequest type) {
         validateType(type); // 입력값 검증
-        if(type.getType().equals(FileTypeType.CUSTOM)) {
+        if(type.getFileType().equals(RejectedFileType.CUSTOM)) {
             validateCount(type); // 갯수 검증
         }
-        FileType fileType = mainService.findFileType(type.getType(), type.getFileType());
-        if (Objects.isNull(fileType)) { // 없으면 신규생성
-            fileType = mainService.create(FileType.builder().fileType(type.getFileType()).type(type.getType()).build()); // 저장
-        } else if(fileType.getExpiredAt() == null) { // 중복입력
+        RejectedFile rejectedFile = mainService.findFileType(type.getFileType(), type.getFileTypeString());
+        if (Objects.isNull(rejectedFile)) { // 없으면 신규생성
+            rejectedFile = mainService.create(RejectedFile.builder().fileType(type.getFileType()).fileTypeString(type.getFileTypeString()).build()); // 저장
+        } else if(rejectedFile.getExpiredAt() == null) { // 중복입력
             throw new RuntimeException("이미 입력된 확장자 입니다.");
-        } else if(fileType.getExpiredAt() != null) { // 기존에 입력된 데이터이나 삭제 됐을 경우
-            mainService.reviveFileType(fileType);
+        } else if(rejectedFile.getExpiredAt() != null) { // 기존에 입력된 데이터이나 삭제 됐을 경우
+            mainService.reviveFileType(rejectedFile);
         }
-        return fileType; // 결과 리턴
+        return rejectedFile; // 결과 리턴
     }
 
     // 저장 및 업데이트는 1개 요소씩, 삭제의 경우는 조회 후 소프트딜리트로 처리
     @DeleteMapping("/deletetype")
-    public FileType deleteAllowedType(@RequestBody FileTypeCreateRequest type) {
+    public RejectedFile deleteAllowedType(@RequestBody FileTypeCreateRequest type) {
         validateType(type); // 입력값 검증
-        FileType fileType = mainService.deleteType(type.getType(), type.getFileType()); // 저장
-        return fileType; // 결과 리턴
+        RejectedFile rejectedFile = mainService.deleteType(type.getFileType(), type.getFileTypeString()); // 저장
+        return rejectedFile; // 결과 리턴
     }
 
     private void validateCount(FileTypeCreateRequest type) {
-        List<FileType> fileTypeList = mainService.getAllCustomTypeList();
-        List<String> strList = fileTypeList.stream().map(e -> e.getFileType().trim()).distinct().collect(Collectors.toList());
-        if (!strList.contains(type.getFileType()) && strList.size() >= 200) {
+        List<RejectedFile> rejectedFileList = mainService.getAllCustomTypeList();
+        List<String> strList = rejectedFileList.stream().map(e -> e.getFileTypeString().trim()).distinct().collect(Collectors.toList());
+        if (!strList.contains(type.getFileTypeString()) && strList.size() >= 200) {
             throw new RuntimeException("커스텀 확장자는 200개 이하여야 합니다");
         }
     }
 
     private void validateType(FileTypeCreateRequest type) {
         // 조건
-        if(StringUtils.isEmpty(type.getFileType()) || type.getFileType().trim().length() > 20) {
+        if(StringUtils.isEmpty(type.getFileTypeString()) || type.getFileTypeString().trim().length() > 20) {
             throw new RuntimeException("확장자는 20자 이하여야 합니다");
         }
 
         // 자주쓰는 확장자의 경우는 FIXED 타입을 설정
         List<String> fixedList = Lists.newArrayList("bat","cmd","com","cpl","exe","scr","js");
-        if(fixedList.contains(type.getFileType().trim())) {
-            type.setType(FileTypeType.FIXED);
+        if(fixedList.contains(type.getFileTypeString().trim())) {
+            type.setFileType(RejectedFileType.FIXED);
         }
     }
 

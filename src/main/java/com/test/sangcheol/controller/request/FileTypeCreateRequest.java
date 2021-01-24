@@ -1,13 +1,13 @@
 package com.test.sangcheol.controller.request;
 
-import com.test.sangcheol.domain.FileTypeType;
+import com.test.sangcheol.domain.RejectedFileType;
 import lombok.Data;
 
 @Data
 public class FileTypeCreateRequest {
 
-    private String fileType;
-    private FileTypeType type = FileTypeType.CUSTOM;
+    private String fileTypeString;
+    private RejectedFileType fileType = RejectedFileType.CUSTOM;
     private boolean isDeleted;
 
 }

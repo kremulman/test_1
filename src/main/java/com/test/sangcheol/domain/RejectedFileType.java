@@ -1,5 +1,5 @@
 package com.test.sangcheol.domain;
 
-public enum FileTypeType {
+public enum RejectedFileType {
     FIXED, CUSTOM
 }

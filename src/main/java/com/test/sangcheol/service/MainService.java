@@ -1,7 +1,7 @@
 package com.test.sangcheol.service;
 
-import com.test.sangcheol.domain.FileType;
-import com.test.sangcheol.domain.FileTypeType;
+import com.test.sangcheol.domain.RejectedFile;
+import com.test.sangcheol.domain.RejectedFileType;
 import com.test.sangcheol.repository.FileTypeRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,31 +18,31 @@ public class MainService {
         this.fileTypeRepository = fileTypeRepository;
     }
 
-    public FileType create(FileType obj) {
-        return fileTypeRepository.save((FileType)obj);
+    public RejectedFile create(RejectedFile rejectedFile) {
+        return fileTypeRepository.save((RejectedFile)rejectedFile);
     }
 
-    public List<FileType> getAllCustomTypeList() {
-        return fileTypeRepository.findAllByTypeIsAndExpiredAtIsNull(FileTypeType.CUSTOM);
+    public List<RejectedFile> getAllCustomTypeList() {
+        return fileTypeRepository.findAllByFileTypeIsAndExpiredAtIsNull(RejectedFileType.CUSTOM);
     }
 
-    public List<FileType> getAllFixedTypeList() {
-        return fileTypeRepository.findAllByTypeIsAndExpiredAtIsNull(FileTypeType.FIXED);
+    public List<RejectedFile> getAllFixedTypeList() {
+        return fileTypeRepository.findAllByFileTypeIsAndExpiredAtIsNull(RejectedFileType.FIXED);
     }
 
     @Transactional
-    public FileType deleteType(FileTypeType type, String fileType) {
-        FileType targetType = fileTypeRepository.findByTypeAndFileTypeAndExpiredAtIsNull(type, fileType);
+    public RejectedFile deleteType(RejectedFileType type, String fileType) {
+        RejectedFile targetType = fileTypeRepository.findByFileTypeAndFileTypeStringAndExpiredAtIsNull(type, fileType);
         targetType.setExpiredAt(LocalDateTime.now());
         return targetType;
     }
 
-    public FileType findFileType(FileTypeType type, String fileType) {
-        return fileTypeRepository.findByTypeAndFileType(type, fileType);
+    public RejectedFile findFileType(RejectedFileType type, String fileType) {
+        return fileTypeRepository.findByFileTypeAndFileTypeString(type, fileType);
     }
 
     @Transactional
-    public void reviveFileType(FileType fileType) {
-        fileType.setExpiredAt(null);
+    public void reviveFileType(RejectedFile rejectedFile) {
+        rejectedFile.setExpiredAt(null);
     }
 }
