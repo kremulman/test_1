@@ -39,7 +39,7 @@
         <td style="width: 77.4148%;">
             <div id="type-container">
                 <c:forEach items="${customTypeList}" var="list" varStatus="status">
-                    <div id="custom-type-${list.id}" style="display: inline-block">${list.fileTypeString}<button onclick='delete_custom_type(${list.fileTypeString})'>X</button></div>
+                    <div id="custom-type-${list.id}" style="display: inline-block">${list.fileTypeString}<button onclick='delete_custom_type("${list.fileTypeString}")'>X</button></div>
                 </c:forEach>
             </div>
         </td>

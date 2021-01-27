@@ -12,6 +12,7 @@
     <artifactId>sangcheol</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>sangcheol</name>
+    <packaging>war</packaging>
     <description>Source for test</description>
     <properties>
         <java.version>1.8</java.version>

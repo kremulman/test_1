@@ -51,7 +51,7 @@ function add_custom_type(fileType, event) {
         success: function (data) {
             console.log("SUCCESS : ", data);
             var originHtml = $('#type-container').html();
-            originHtml = originHtml + "<div id='custom-type-" + data.id + "' style='display: inline-block'>" + data.fileTypeString + "<button onclick='delete_custom_type(" + data.fileTypeString + ")'>X</button></div>";
+            originHtml = originHtml + "<div id='custom-type-" + data.id + "' style='display: inline-block'>" + data.fileTypeString + "<button onclick='delete_custom_type(\"" + data.fileTypeString + "\")'>X</button></div>";
             $('#type-container').html(originHtml);
             eventTarget.prop("disabled", false);
             $("#type-string").val("");
